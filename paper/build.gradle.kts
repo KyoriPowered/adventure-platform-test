@@ -21,6 +21,13 @@ opinionated {
 
 spigot {
   apiVersion = "1.13"
+
+  commands {
+    create("adventure") {
+      description = "Test command for adventure"
+      permission = "adventure.test"
+    }
+  }
 }
 
 tasks.shadowJar.configure {
