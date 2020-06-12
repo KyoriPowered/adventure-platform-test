@@ -1,6 +1,6 @@
-rootProject.name = "adventure-testplugin"
+rootProject.name = "adventure-platform-test"
 
 listOf("paper", "sponge", "bungee").forEach {
     include(it)
-    findProject(":$it")?.name = "testplugin-$it"
+    findProject(":$it")?.name = "test-$it"
 }
