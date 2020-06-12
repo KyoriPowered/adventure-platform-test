@@ -24,12 +24,34 @@
 
 package net.kyori.testplugin.bungee;
 
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.platform.Adventure;
+import net.kyori.adventure.platform.AdventurePlatform;
 import net.md_5.bungee.api.plugin.Plugin;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
+/**
+ * Entry point for the bungee Adventure test plugin.
+ */
 public class AdventureTestPlugin extends Plugin {
+
+  private static final String ID = "adventure-testplugin";
+
+  private AdventurePlatform adventure;
+  private BossBarServerIndicator serverIndicators;
 
   @Override
   public void onEnable() {
+    this.adventure = Adventure.of(Key.of(ID, "default"));
+    serverIndicators = BossBarServerIndicator.create(this);
     // todo: register some commands
+  }
+
+  public AdventurePlatform adventure() {
+    return this.adventure;
+  }
+
+  /* package */ static @NonNull String permission(final @NonNull String base) {
+    return ID + "." + base;
   }
 }
