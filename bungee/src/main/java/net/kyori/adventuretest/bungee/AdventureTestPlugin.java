@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.kyori.testplugin.bungee;
+package net.kyori.adventuretest.bungee;
 
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.Adventure;

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.kyori.testplugin.bungee;
+package net.kyori.adventuretest.bungee;
 
 import java.util.Map;
 import java.util.UUID;
@@ -39,8 +39,6 @@ import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import static net.kyori.testplugin.bungee.AdventureTestPlugin.permission;
 
 /**
  * A module that will add a boss bar to every user indicating their current server.
@@ -87,7 +85,7 @@ import static net.kyori.testplugin.bungee.AdventureTestPlugin.permission;
 
     // Create and show bar if necessary (for first join)
     final BossBar bar = this.indicators.computeIfAbsent(player.getUniqueId(), ply -> {
-      if(!player.hasPermission(permission("indicator.login"))) {
+      if(!player.hasPermission(AdventureTestPlugin.permission("indicator.login"))) {
         return null;
       }
 

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.kyori.testplugin.sponge;
+package net.kyori.adventuretest.sponge;
 
 import com.google.gson.JsonParseException;
 import com.google.inject.Inject;

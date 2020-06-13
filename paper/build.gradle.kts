@@ -16,7 +16,7 @@ dependencies {
 
 opinionated {
   mit()
-  github("KyoriPowered", "adventure-testplugins")
+  github("KyoriPowered", "adventure-platform-test")
 }
 
 spigot {
@@ -36,7 +36,7 @@ tasks.shadowJar.configure {
   }
   mergeServiceFiles()
   sequenceOf("net.kyori.adventure", "net.kyori.examination").forEach {
-    relocate(it, "net.kyori.testplugin.paper.ext.$it")
+    relocate(it, "net.kyori.adventuretest.paper.ext.$it")
   }
   dependencies {
     exclude(dependency("com.google.code.gson:.*"))
