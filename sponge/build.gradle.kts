@@ -25,7 +25,9 @@ tasks.shadowJar.configure {
   }
   mergeServiceFiles()
   sequenceOf("net.kyori.adventure", "net.kyori.examination").forEach {
-    relocate(it, "net.kyori.adventuretest.sponge.ext.$it")
+    relocate(it, "net.kyori.adventure.test.sponge.ext.$it") {
+      exclude("net.kyori.adventure.test.*")
+    }
   }
   dependencies {
     exclude(dependency("com.google.code.gson:.*"))

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventuretest.bungee;
+package net.kyori.adventure.test.bungee;
 
 import java.util.Map;
 import java.util.UUID;
@@ -48,7 +48,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  *
  * This indicator will only be shown to players with the permission {@code adventure-testplugin.bossbar.indicator}
  */
-/* package */ class BossBarServerIndicator implements Listener {
+public class BossBarServerIndicator implements Listener {
   private static final BossBar.Color[] COLORS = BossBar.Color.values();
 
   private final AdventurePlatform adventure;
@@ -81,7 +81,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
   private void updateOrCreateBar(final @NonNull ProxiedPlayer player, final @NonNull String serverName) {
     final BossBar.Color barColor = COLORS[Math.abs(serverName.hashCode() % COLORS.length)];
-    final Component nameComponent = TextComponent.builder("You are connected to: ").append(TextComponent.of(serverName, color(barColor))).build();
+    final Component nameComponent = TextComponent.builder("You are connected to: ", NamedTextColor.GRAY)
+      .append(TextComponent.of(serverName, color(barColor))).build();
 
     // Create and show bar if necessary (for first join)
     final BossBar bar = this.indicators.computeIfAbsent(player.getUniqueId(), ply -> {
@@ -104,13 +105,13 @@ import org.checkerframework.checker.nullness.qual.NonNull;
   }
 
   @EventHandler
-  private void playerChangedServer(final @NonNull ServerSwitchEvent event) {
+  public void playerChangedServer(final @NonNull ServerSwitchEvent event) {
     final ProxiedPlayer player = event.getPlayer();
     updateOrCreateBar(player, player.getServer().getInfo().getName());
   }
 
   @EventHandler
-  private void cleanupPlayer(final @NonNull PlayerDisconnectEvent event) {
+  public void cleanupPlayer(final @NonNull PlayerDisconnectEvent event) {
     // Just remove our tracking -- Adventure will clean up the bar on disconnect
     this.indicators.remove(event.getPlayer().getUniqueId());
   }

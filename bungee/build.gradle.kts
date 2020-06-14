@@ -14,7 +14,7 @@ opinionated {
 }
 
 bungee {
-  main = "net.kyori.adventuretest.bungee.AdventureTestPlugin"
+  main = "net.kyori.adventure.test.bungee.AdventureTestPlugin"
 }
 
 tasks.shadowJar.configure {
@@ -23,7 +23,9 @@ tasks.shadowJar.configure {
   }
   mergeServiceFiles()
   sequenceOf("net.kyori.adventure", "net.kyori.examination").forEach {
-    relocate(it, "net.kyori.adventuretest.bungee.ext.$it")
+    relocate(it, "net.kyori.adventure.test.bungee.ext.$it") {
+      exclude("net.kyori.adventure.test.*")
+    }
   }
   dependencies {
     exclude(dependency("com.google.code.gson:.*"))

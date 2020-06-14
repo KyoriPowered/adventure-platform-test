@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventuretest.sponge;
+package net.kyori.adventure.test.sponge;
 
 import com.google.gson.JsonParseException;
 import com.google.inject.Inject;
@@ -140,6 +140,9 @@ public class AdventureTestPlugin {
     return CommandSpec.builder()
       .permission(permission("sound.play"))
       .description(Text.of("Play a sound"))
+      .executor((src, ctx) -> {
+        return CommandResult.empty();
+      })
       .build();
   }
 
@@ -147,6 +150,9 @@ public class AdventureTestPlugin {
     return CommandSpec.builder()
       .permission(permission("sound.stop"))
       .description(Text.of("Stop a sound"))
+      .executor((src, ctx) -> {
+        return CommandResult.empty();
+      })
       .build();
   }
 
@@ -154,6 +160,9 @@ public class AdventureTestPlugin {
     return CommandSpec.builder()
       .permission(permission("title"))
       .description(Text.of("Show a title to the sender"))
+      .executor((src, ctx) -> {
+        return CommandResult.empty();
+      })
       .build();
   }
 
@@ -161,6 +170,9 @@ public class AdventureTestPlugin {
     return CommandSpec.builder()
       .permission(permission("countdown"))
       .description(Text.of("Show a boss bar"))
+      .executor((src, ctx) -> {
+        return CommandResult.empty();
+      })
       .build();
   }
 

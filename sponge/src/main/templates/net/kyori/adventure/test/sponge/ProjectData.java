@@ -1,4 +1,4 @@
-package net.kyori.adventuretest.sponge;
+package net.kyori.adventure.test.sponge;
 
 /* package */ class ProjectData {
   public static final String ID = "${project.rootProject.name.toLowerCase()}";

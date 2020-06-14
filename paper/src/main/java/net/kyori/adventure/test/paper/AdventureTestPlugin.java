@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.kyori.adventuretest.paper;
+package net.kyori.adventure.test.paper;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
