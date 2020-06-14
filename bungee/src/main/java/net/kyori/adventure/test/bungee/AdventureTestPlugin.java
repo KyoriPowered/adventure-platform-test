@@ -24,11 +24,11 @@
 
 package net.kyori.adventure.test.bungee;
 
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.Adventure;
-import net.kyori.adventure.platform.AdventurePlatform;
+import net.kyori.adventure.platform.bungeecord.BungeePlatform;
 import net.md_5.bungee.api.plugin.Plugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Entry point for the bungee Adventure test plugin.
@@ -37,18 +37,24 @@ public class AdventureTestPlugin extends Plugin {
 
   private static final String ID = "adventure-testplugin";
 
-  private AdventurePlatform adventure;
+  private BungeePlatform adventure;
   private BossBarServerIndicator serverIndicators;
 
   @Override
   public void onEnable() {
-    this.adventure = Adventure.of(Key.of(ID, "default"));
+    this.adventure = BungeePlatform.of(this);
     serverIndicators = BossBarServerIndicator.create(this);
     // todo: register some commands
   }
 
-  public AdventurePlatform adventure() {
-    return this.adventure;
+  @Override
+  public void onDisable() {
+    this.adventure.close();
+    this.adventure = null;
+  }
+
+  public BungeePlatform adventure() {
+    return requireNonNull(this.adventure, "Adventure platform has not yet been initialized");
   }
 
   /* package */ static @NonNull String permission(final @NonNull String base) {

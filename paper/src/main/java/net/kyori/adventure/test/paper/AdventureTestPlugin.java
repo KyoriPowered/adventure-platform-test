@@ -29,9 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.function.Consumer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.Adventure;
-import net.kyori.adventure.platform.AdventurePlatform;
+import net.kyori.adventure.platform.bukkit.BukkitPlatform;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -44,6 +42,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import static java.util.Objects.requireNonNull;
+
 public class AdventureTestPlugin extends JavaPlugin {
 
   private static final TextColor ERROR_COLOR = TextColor.of(0xff2222);
@@ -51,11 +51,23 @@ public class AdventureTestPlugin extends JavaPlugin {
   private static final TextColor BAR_COLOR = TextColor.of(0xcc0044);
   private static final Duration DEF = Duration.of(5, ChronoUnit.SECONDS);
 
-  private AdventurePlatform platform;
+  private BukkitPlatform platform;
 
   @Override
   public void onEnable() {
-    this.platform = Adventure.of(Key.of("adventure-testplugin", "default"));
+    this.platform = BukkitPlatform.of(this);
+  }
+
+  @Override
+  public void onDisable() {
+    if(this.platform != null) {
+      this.platform.close();
+      this.platform = null;
+    }
+  }
+
+  public BukkitPlatform adventure() {
+    return requireNonNull(this.platform, "Adventure platform not yet initialized");
   }
 
   /**
@@ -79,7 +91,7 @@ public class AdventureTestPlugin extends JavaPlugin {
 
   @Override
   public boolean onCommand(final @NonNull CommandSender sender, final @NonNull Command command, final @NonNull String label, final @NonNull String @NonNull [] args) {
-    final Audience result = this.platform.player(((Player) sender).getUniqueId());
+    final Audience result = this.platform.audience(sender);
     if(args.length < 1) {
       result.sendMessage(TextComponent.of("Subcommand required: countdown|bar|title|version|echo", ERROR_COLOR));
       return false;

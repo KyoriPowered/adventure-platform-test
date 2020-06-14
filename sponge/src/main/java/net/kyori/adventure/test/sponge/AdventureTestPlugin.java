@@ -27,9 +27,7 @@ package net.kyori.adventure.test.sponge;
 import com.google.gson.JsonParseException;
 import com.google.inject.Inject;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.Adventure;
-import net.kyori.adventure.platform.AdventurePlatform;
+import net.kyori.adventure.platform.spongeapi.SpongePlatform;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -39,7 +37,6 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -56,37 +53,29 @@ public class AdventureTestPlugin {
   private final Logger logger;
   private final Game game;
   private final PluginContainer container;
-  private AdventurePlatform platform;
+  private final SpongePlatform adventure;
 
   // Setup //
 
   @Inject
-  public AdventureTestPlugin(Logger logger, Game game, PluginContainer container) {
+  public AdventureTestPlugin(final @NonNull Logger logger, final @NonNull Game game, final @NonNull PluginContainer container, final @NonNull SpongePlatform adventure) {
     this.logger = logger;
     this.game = game;
     this.container = container;
+    this.adventure = adventure;
   }
 
   @Listener
   public void preInit(final @NonNull GamePreInitializationEvent event) {
     // request our platform instance
-    this.platform = Adventure.of(Key.of(ProjectData.ID, "default"));
 
     this.game.getCommandManager().register(this, createTestCommand(), "adventure", "adv");
 
-    this.logger.info("{} version {} was successfully loaded", this.container.getName(), this.container.getVersion());
+    this.logger.info("{} version {} was successfully loaded", this.container.getName(), this.container.getVersion().orElse("unknown"));
   }
 
-  public @NonNull AdventurePlatform adventure() {
-    return this.platform;
-  }
-
-  public @NonNull Audience audience(final CommandSource source) {
-    if(source instanceof Player) {
-      return adventure().player(((Player) source).getUniqueId());
-    } else {
-      return adventure().console(); // TODO: this is not always correct
-    }
+  public @NonNull SpongePlatform adventure() {
+    return this.adventure;
   }
 
   // Event listeners //
@@ -94,7 +83,7 @@ public class AdventureTestPlugin {
   @Listener
   public void playerJoin(final ClientConnectionEvent.@NonNull Join event) {
     final Player joining = event.getTargetEntity();
-    final Audience adventure = audience(joining);
+    final Audience adventure = adventure().audience(joining);
     adventure.sendActionBar(TextComponent.make("Welcome to the ", b -> {
       b.append(TextComponent.of("adventure test plugin", NamedTextColor.BLUE))
         .color(NamedTextColor.AQUA);
@@ -119,7 +108,7 @@ public class AdventureTestPlugin {
       .permission(permission("echo"))
       .arguments(remainingRawJoinedStrings(Text.of("message")))
       .executor((src, args) -> {
-        final Audience audience = audience(src);
+        final Audience audience = adventure().audience(src);
         final String raw = args.<String>getOne("message")
           .orElseThrow(() -> new CommandException(Text.of("No message was provided!")));
        final Component component;
