@@ -40,6 +40,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static java.util.Objects.requireNonNull;
@@ -50,6 +51,7 @@ public class AdventureTestPlugin extends JavaPlugin {
   private static final TextColor RESPONSE_COLOR = TextColor.of(0x33ac88);
   private static final TextColor BAR_COLOR = TextColor.of(0xcc0044);
   private static final Duration DEF = Duration.of(5, ChronoUnit.SECONDS);
+  private static final BossBar NOTIFICATION = BossBar.of(TextComponent.of("Welcome!", NamedTextColor.AQUA), .3f /* to see 1.8 Wither shimmer */, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
 
   private BukkitPlatform platform;
 
@@ -130,6 +132,12 @@ public class AdventureTestPlugin extends JavaPlugin {
         final Component text = GsonComponentSerializer.INSTANCE.deserialize(value);
         result.sendMessage(text);
         break;
+      case "baron":
+        result.showBossBar(NOTIFICATION);
+        break;
+      case "baroff":
+        result.hideBossBar(NOTIFICATION);
+        break;
       default:
         result.sendMessage(TextComponent.of("Unknown sub-command: " + args[0], ERROR_COLOR));
         return false;
@@ -155,23 +163,27 @@ public class AdventureTestPlugin extends JavaPlugin {
 
     final int timeMs = timeSeconds * 1000; // total time ms
     final long[] times = new long[]{timeMs, System.currentTimeMillis()}; // remaining time in ms, last update time
-    getServer().getScheduler().runTaskTimer(this, task -> {
-      final long now = System.currentTimeMillis();
-      final long dt = now - times[1];
-      times[0] -= dt;
-      times[1] = now;
+    final BukkitRunnable run = new BukkitRunnable() {
+      @Override
+      public void run() {
+        final long now = System.currentTimeMillis();
+        final long dt = now - times[1];
+        times[0] -= dt;
+        times[1] = now;
 
-      if(times[0] <= 0) { // we are complete
-        task.cancel();
-        targets.hideBossBar(bar);
-        completionAction.accept(targets);
-        return;
+        if(times[0] <= 0) { // we are complete
+          cancel();
+          targets.hideBossBar(bar);
+          completionAction.accept(targets);
+          return;
+        }
+
+        final float newFraction = bar.percent() - (dt / (float) timeMs);
+        assert newFraction > 0;
+        bar.percent(newFraction);
       }
-
-      final float newFraction = bar.percent() - (dt / (float) timeMs);
-      assert newFraction > 0;
-      bar.percent(newFraction);
-    }, 0, UPDATE_FREQUENCY);
+    };
+    run.runTaskTimer(this, 0, UPDATE_FREQUENCY);
     targets.showBossBar(bar);
   }
 }
