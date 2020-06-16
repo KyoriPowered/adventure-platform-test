@@ -31,10 +31,7 @@ spigot {
 }
 
 tasks.shadowJar.configure {
-  minimize {
-    exclude(dependency("net.kyori:adventure-platform-bukkit"))
-  }
-  mergeServiceFiles()
+  minimize()
   sequenceOf("net.kyori.adventure", "net.kyori.examination").forEach {
     relocate(it, "net.kyori.adventure.test.paper.ext.$it") {
       exclude("net.kyori.adventure.test.*")

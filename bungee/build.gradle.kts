@@ -18,10 +18,7 @@ bungee {
 }
 
 tasks.shadowJar.configure {
-  minimize {
-    exclude(dependency("net.kyori:adventure-platform-bungeecord"))
-  }
-  mergeServiceFiles()
+  minimize()
   sequenceOf("net.kyori.adventure", "net.kyori.examination").forEach {
     relocate(it, "net.kyori.adventure.test.bungee.ext.$it") {
       exclude("net.kyori.adventure.test.*")

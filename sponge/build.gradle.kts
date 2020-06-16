@@ -20,10 +20,7 @@ opinionated {
 }
 
 tasks.shadowJar.configure {
-  minimize {
-    exclude(dependency("net.kyori:adventure-platform-spongeapi"))
-  }
-  mergeServiceFiles()
+  minimize()
   sequenceOf("net.kyori.adventure", "net.kyori.examination").forEach {
     relocate(it, "net.kyori.adventure.test.sponge.ext.$it") {
       exclude("net.kyori.adventure.test.*")
