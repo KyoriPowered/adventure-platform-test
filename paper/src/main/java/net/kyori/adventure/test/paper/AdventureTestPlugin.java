@@ -29,11 +29,16 @@ import java.time.temporal.ChronoUnit;
 import java.util.function.Consumer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.bukkit.BukkitPlatform;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.title.Title;
 import org.bukkit.command.Command;
@@ -93,9 +98,9 @@ public class AdventureTestPlugin extends JavaPlugin {
 
   @Override
   public boolean onCommand(final @NonNull CommandSender sender, final @NonNull Command command, final @NonNull String label, final @NonNull String @NonNull [] args) {
-    final Audience result = this.platform.audience(sender);
+    final Audience result = adventure().audience(sender);
     if(args.length < 1) {
-      result.sendMessage(TextComponent.of("Subcommand required: countdown|bar|title|version|echo", ERROR_COLOR));
+      result.sendMessage(TextComponent.of("Subcommand required: countdown|bar|title|version|echo|sound", ERROR_COLOR));
       return false;
     }
     switch(args[0]) {
@@ -137,6 +142,24 @@ public class AdventureTestPlugin extends JavaPlugin {
         break;
       case "baroff":
         result.hideBossBar(NOTIFICATION);
+        break;
+      case "sound":
+        if(args.length < 2) {
+          result.sendMessage(TextComponent.of("Not enough args! Usage: /adventure sound <id> [source]", ERROR_COLOR));
+          return true;
+        }
+        Sound.Source source = Sound.Source.AMBIENT;
+        if(args.length >= 3) {
+          source = Sound.Source.NAMES.value(args[2]);
+          if(source == null) {
+            result.sendMessage(TextComponent.builder("Unknown source: ", ERROR_COLOR).append(TextComponent.of(args[2], Style.of(TextDecoration.ITALIC))).build());
+            return true;
+          }
+        }
+        result.playSound(Sound.of(Key.of(args[1]), source, 1f, 1f));
+        break;
+      case "stopsound":
+        result.stopSound(SoundStop.all());
         break;
       default:
         result.sendMessage(TextComponent.of("Unknown sub-command: " + args[0], ERROR_COLOR));
