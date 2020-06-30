@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.platform.AdventurePlatform;
+import net.kyori.adventure.platform.AudienceProvider;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -51,7 +51,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public class BossBarServerIndicator implements Listener {
   private static final BossBar.Color[] COLORS = BossBar.Color.values();
 
-  private final AdventurePlatform adventure;
+  private final AudienceProvider adventure;
   private volatile boolean visible = true;
   private final Map<UUID, BossBar> indicators = new ConcurrentHashMap<>();
 
@@ -61,7 +61,7 @@ public class BossBarServerIndicator implements Listener {
     return module;
   }
 
-  private BossBarServerIndicator(final @NonNull AdventurePlatform adventure) {
+  private BossBarServerIndicator(final @NonNull AudienceProvider adventure) {
     this.adventure = adventure;
   }
 

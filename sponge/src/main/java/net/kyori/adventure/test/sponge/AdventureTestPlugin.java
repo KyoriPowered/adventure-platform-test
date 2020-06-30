@@ -27,7 +27,7 @@ package net.kyori.adventure.test.sponge;
 import com.google.gson.JsonParseException;
 import com.google.inject.Inject;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.spongeapi.SpongePlatform;
+import net.kyori.adventure.platform.spongeapi.SpongeAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -53,12 +53,12 @@ public class AdventureTestPlugin {
   private final Logger logger;
   private final Game game;
   private final PluginContainer container;
-  private final SpongePlatform adventure;
+  private final SpongeAudiences adventure;
 
   // Setup //
 
   @Inject
-  public AdventureTestPlugin(final @NonNull Logger logger, final @NonNull Game game, final @NonNull PluginContainer container, final @NonNull SpongePlatform adventure) {
+  public AdventureTestPlugin(final @NonNull Logger logger, final @NonNull Game game, final @NonNull PluginContainer container, final @NonNull SpongeAudiences adventure) {
     this.logger = logger;
     this.game = game;
     this.container = container;
@@ -68,13 +68,12 @@ public class AdventureTestPlugin {
   @Listener
   public void preInit(final @NonNull GamePreInitializationEvent event) {
     // request our platform instance
-
     this.game.getCommandManager().register(this, createTestCommand(), "adventure", "adv");
 
     this.logger.info("{} version {} was successfully loaded", this.container.getName(), this.container.getVersion().orElse("unknown"));
   }
 
-  public @NonNull SpongePlatform adventure() {
+  public @NonNull SpongeAudiences adventure() {
     return this.adventure;
   }
 
@@ -114,7 +113,7 @@ public class AdventureTestPlugin {
        final Component component;
 
         try {
-          component = GsonComponentSerializer.INSTANCE.deserialize(raw);
+          component = GsonComponentSerializer.gson().deserialize(raw);
         } catch(final JsonParseException ex) {
           throw new CommandException(Text.of("Unable to parse JSON"), ex);
         }

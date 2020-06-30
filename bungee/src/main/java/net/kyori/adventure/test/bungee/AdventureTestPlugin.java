@@ -24,7 +24,7 @@
 
 package net.kyori.adventure.test.bungee;
 
-import net.kyori.adventure.platform.bungeecord.BungeePlatform;
+import net.kyori.adventure.platform.bungeecord.BungeeAudiences;
 import net.md_5.bungee.api.plugin.Plugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -37,12 +37,12 @@ public class AdventureTestPlugin extends Plugin {
 
   private static final String ID = "adventure-testplugin";
 
-  private BungeePlatform adventure;
+  private BungeeAudiences adventure;
   private BossBarServerIndicator serverIndicators;
 
   @Override
   public void onEnable() {
-    this.adventure = BungeePlatform.of(this);
+    this.adventure = BungeeAudiences.create(this);
     serverIndicators = BossBarServerIndicator.create(this);
     // todo: register some commands
   }
@@ -53,7 +53,7 @@ public class AdventureTestPlugin extends Plugin {
     this.adventure = null;
   }
 
-  public BungeePlatform adventure() {
+  public BungeeAudiences adventure() {
     return requireNonNull(this.adventure, "Adventure platform has not yet been initialized");
   }
 

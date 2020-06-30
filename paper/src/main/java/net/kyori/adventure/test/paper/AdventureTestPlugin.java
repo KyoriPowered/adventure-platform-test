@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.bukkit.BukkitPlatform;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -58,11 +58,11 @@ public class AdventureTestPlugin extends JavaPlugin {
   private static final Duration DEF = Duration.of(5, ChronoUnit.SECONDS);
   private static final BossBar NOTIFICATION = BossBar.of(TextComponent.of("Welcome!", NamedTextColor.AQUA), .3f /* to see 1.8 Wither shimmer */, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
 
-  private BukkitPlatform platform;
+  private BukkitAudiences platform;
 
   @Override
   public void onEnable() {
-    this.platform = BukkitPlatform.of(this);
+    this.platform = BukkitAudiences.create(this);
   }
 
   @Override
@@ -73,7 +73,7 @@ public class AdventureTestPlugin extends JavaPlugin {
     }
   }
 
-  public BukkitPlatform adventure() {
+  public BukkitAudiences adventure() {
     return requireNonNull(this.platform, "Adventure platform not yet initialized");
   }
 
@@ -123,7 +123,7 @@ public class AdventureTestPlugin extends JavaPlugin {
           return false;
         }
         final String titleStr = join(args, " ", 1);
-        final Component title = GsonComponentSerializer.INSTANCE.deserialize(titleStr);
+        final Component title = GsonComponentSerializer.gson().deserialize(titleStr);
         result.showTitle(Title.of(title, TextComponent.of("From adventure"), DEF, DEF, DEF));
         break;
       case "version":
@@ -134,7 +134,7 @@ public class AdventureTestPlugin extends JavaPlugin {
         break;
       case "echo":
         final String value = join(args, " ", 1);
-        final Component text = GsonComponentSerializer.INSTANCE.deserialize(value);
+        final Component text = GsonComponentSerializer.gson().deserialize(value);
         result.sendMessage(text);
         break;
       case "baron":
