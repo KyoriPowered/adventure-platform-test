@@ -39,7 +39,8 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.title.Title;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -73,6 +74,10 @@ public class AdventureTestPlugin extends JavaPlugin {
     }
   }
 
+  public ComponentSerializer<Component, ? extends Component, String> serializer() {
+    return MiniMessage.withMarkDown();
+  }
+
   public BukkitAudiences adventure() {
     return requireNonNull(this.platform, "Adventure platform not yet initialized");
   }
@@ -98,14 +103,14 @@ public class AdventureTestPlugin extends JavaPlugin {
 
   @Override
   public boolean onCommand(final @NonNull CommandSender sender, final @NonNull Command command, final @NonNull String label, final @NonNull String @NonNull [] args) {
-    final Audience result = adventure().audience(sender);
+    final Audience result = this.adventure().audience(sender);
     if(args.length < 1) {
       result.sendMessage(TextComponent.of("Subcommand required: countdown|bar|title|version|echo|sound", ERROR_COLOR));
       return false;
     }
     switch(args[0]) {
       case "countdown":
-        beginCountdown(TextComponent.of("Until the end", BAR_COLOR), 10, result, viewer -> {
+        this.beginCountdown(TextComponent.of("Until the end", BAR_COLOR), 10, result, viewer -> {
           viewer.sendMessage(TextComponent.of("Countdown complete", RESPONSE_COLOR));
           viewer.sendActionBar(TextComponent.of("Countdown complete", RESPONSE_COLOR));
         });
@@ -123,7 +128,7 @@ public class AdventureTestPlugin extends JavaPlugin {
           return false;
         }
         final String titleStr = join(args, " ", 1);
-        final Component title = GsonComponentSerializer.gson().deserialize(titleStr);
+        final Component title = this.serializer().deserialize(titleStr);
         result.showTitle(Title.of(title, TextComponent.of("From adventure"), DEF, DEF, DEF));
         break;
       case "version":
@@ -134,7 +139,7 @@ public class AdventureTestPlugin extends JavaPlugin {
         break;
       case "echo":
         final String value = join(args, " ", 1);
-        final Component text = GsonComponentSerializer.gson().deserialize(value);
+        final Component text = this.serializer().deserialize(value);
         result.sendMessage(text);
         break;
       case "baron":
@@ -195,7 +200,7 @@ public class AdventureTestPlugin extends JavaPlugin {
         times[1] = now;
 
         if(times[0] <= 0) { // we are complete
-          cancel();
+          this.cancel();
           targets.hideBossBar(bar);
           completionAction.accept(targets);
           return;

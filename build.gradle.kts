@@ -1,5 +1,5 @@
 plugins {
-  id("ca.stellardrift.opinionated") version "3.0" apply false
+  id("ca.stellardrift.opinionated") version "3.1" apply false
   id("com.github.johnrengelman.shadow") version "5.2.0" apply false
 }
 
@@ -17,6 +17,8 @@ subprojects {
     }
   }
 
-  description = rootProject.description
+  dependencies {
+    "implementation"("net.kyori:adventure-text-minimessage:3.0.0-SNAPSHOT")
+  }
 }
 
