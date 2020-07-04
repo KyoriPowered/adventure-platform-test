@@ -68,7 +68,7 @@ public class AdventureTestPlugin {
   @Listener
   public void preInit(final @NonNull GamePreInitializationEvent event) {
     // request our platform instance
-    this.game.getCommandManager().register(this, createTestCommand(), "adventure", "adv");
+    this.game.getCommandManager().register(this, this.createTestCommand(), "adventure", "adv");
 
     this.logger.info("{} version {} was successfully loaded", this.container.getName(), this.container.getVersion().orElse("unknown"));
   }
@@ -82,7 +82,7 @@ public class AdventureTestPlugin {
   @Listener
   public void playerJoin(final ClientConnectionEvent.@NonNull Join event) {
     final Player joining = event.getTargetEntity();
-    final Audience adventure = adventure().audience(joining);
+    final Audience adventure = this.adventure().audience(joining);
     adventure.sendActionBar(TextComponent.make("Welcome to the ", b -> {
       b.append(TextComponent.of("adventure test plugin", NamedTextColor.BLUE))
         .color(NamedTextColor.AQUA);
@@ -94,11 +94,11 @@ public class AdventureTestPlugin {
   private CommandSpec createTestCommand() {
     return CommandSpec.builder()
       .description(Text.of("A test command for Adventure"))
-      .child(echoCommand(), "echo")
-      .child(playSoundCommand(), "sound", "playsound")
-      .child(stopSoundCommand(), "stopsound", "silence")
-      .child(titleCommand(), "title")
-      .child(countdownCommand(), "countdown")
+      .child(this.echoCommand(), "echo")
+      .child(this.playSoundCommand(), "sound", "playsound")
+      .child(this.stopSoundCommand(), "stopsound", "silence")
+      .child(this.titleCommand(), "title")
+      .child(this.countdownCommand(), "countdown")
       .build();
   }
 
@@ -107,10 +107,10 @@ public class AdventureTestPlugin {
       .permission(permission("echo"))
       .arguments(remainingRawJoinedStrings(Text.of("message")))
       .executor((src, args) -> {
-        final Audience audience = adventure().audience(src);
+        final Audience audience = this.adventure().audience(src);
         final String raw = args.<String>getOne("message")
           .orElseThrow(() -> new CommandException(Text.of("No message was provided!")));
-       final Component component;
+        final Component component;
 
         try {
           component = GsonComponentSerializer.gson().deserialize(raw);

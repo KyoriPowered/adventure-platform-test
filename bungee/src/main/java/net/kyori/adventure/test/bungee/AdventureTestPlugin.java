@@ -43,7 +43,7 @@ public class AdventureTestPlugin extends Plugin {
   @Override
   public void onEnable() {
     this.adventure = BungeeAudiences.create(this);
-    serverIndicators = BossBarServerIndicator.create(this);
+    this.serverIndicators = BossBarServerIndicator.create(this);
     // todo: register some commands
   }
 

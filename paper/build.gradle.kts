@@ -32,11 +32,11 @@ spigot {
 
 tasks.shadowJar.configure {
   minimize()
-  sequenceOf("net.kyori.adventure", "net.kyori.examination").forEach {
+  /*sequenceOf("net.kyori.adventure", "net.kyori.examination").forEach {
     relocate(it, "net.kyori.adventure.test.paper.ext.$it") {
       exclude("net.kyori.adventure.test.*")
     }
-  }
+  }*/
   dependencies {
     exclude(dependency("com.google.code.gson:.*"))
     exclude(dependency("org.checkerframework:.*"))

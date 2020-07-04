@@ -48,14 +48,14 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  *
  * This indicator will only be shown to players with the permission {@code adventure-testplugin.bossbar.indicator}
  */
-public class BossBarServerIndicator implements Listener {
+public final class BossBarServerIndicator implements Listener {
   private static final BossBar.Color[] COLORS = BossBar.Color.values();
 
   private final AudienceProvider adventure;
   private volatile boolean visible = true;
   private final Map<UUID, BossBar> indicators = new ConcurrentHashMap<>();
 
-  static BossBarServerIndicator create(final @NonNull AdventureTestPlugin plugin) {
+  /* package */ static BossBarServerIndicator create(final @NonNull AdventureTestPlugin plugin) {
     final BossBarServerIndicator module = new BossBarServerIndicator(plugin.adventure());
     plugin.getProxy().getPluginManager().registerListener(plugin, module);
     return module;
@@ -67,14 +67,14 @@ public class BossBarServerIndicator implements Listener {
 
   public void showAll() {
     this.visible = true;
-    for(Map.Entry<UUID, BossBar> entry : this.indicators.entrySet()) {
+    for(final Map.Entry<UUID, BossBar> entry : this.indicators.entrySet()) {
       this.adventure.player(entry.getKey()).showBossBar(entry.getValue());
     }
   }
 
   public void hideAll() {
     this.visible = false;
-    for(Map.Entry<UUID, BossBar> entry : this.indicators.entrySet()) {
+    for(final Map.Entry<UUID, BossBar> entry : this.indicators.entrySet()) {
       this.adventure.player(entry.getKey()).hideBossBar(entry.getValue());
     }
   }
@@ -90,7 +90,7 @@ public class BossBarServerIndicator implements Listener {
         return null;
       }
 
-      BossBar ret = BossBar.of(nameComponent, 1f, barColor, BossBar.Overlay.NOTCHED_20);
+      final BossBar ret = BossBar.of(nameComponent, 1f, barColor, BossBar.Overlay.NOTCHED_20);
       if(this.visible) {
         this.adventure.player(ply).showBossBar(ret);
       }
@@ -107,7 +107,7 @@ public class BossBarServerIndicator implements Listener {
   @EventHandler
   public void playerChangedServer(final @NonNull ServerSwitchEvent event) {
     final ProxiedPlayer player = event.getPlayer();
-    updateOrCreateBar(player, player.getServer().getInfo().getName());
+    this.updateOrCreateBar(player, player.getServer().getInfo().getName());
   }
 
   @EventHandler
