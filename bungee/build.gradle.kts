@@ -21,7 +21,7 @@ tasks.shadowJar.configure {
   minimize()
   sequenceOf("net.kyori.adventure", "net.kyori.examination").forEach {
     relocate(it, "net.kyori.adventure.test.bungee.ext.$it") {
-      exclude("net.kyori.adventure.test.*")
+      exclude("net/kyori/adventure/test/**")
     }
   }
   dependencies {

@@ -24,8 +24,15 @@
 
 package net.kyori.adventure.test.bungee;
 
+import java.io.IOException;
 import net.kyori.adventure.platform.bungeecord.BungeeAudiences;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.bungeecord.BungeeCordComponentSerializer;
+import net.md_5.bungee.api.event.ProxyPingEvent;
+import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.event.EventHandler;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static java.util.Objects.requireNonNull;
@@ -33,18 +40,27 @@ import static java.util.Objects.requireNonNull;
 /**
  * Entry point for the bungee Adventure test plugin.
  */
-public class AdventureTestPlugin extends Plugin {
+public class AdventureTestPlugin extends Plugin implements Listener {
 
+  public static final TextColor COLOR_RESPONSE = TextColor.of(0xAA33CC);
+  public static final TextColor COLOR_ERROR = TextColor.of(0xFF0000);
   private static final String ID = "adventure-testplugin";
 
   private BungeeAudiences adventure;
   private BossBarServerIndicator serverIndicators;
+  private Configuration config;
 
   @Override
   public void onEnable() {
     this.adventure = BungeeAudiences.create(this);
     this.serverIndicators = BossBarServerIndicator.create(this);
-    // todo: register some commands
+    try {
+      this.config = Configuration.create(this.getDataFolder().toPath().resolve("config.yml"));
+    } catch(final IOException ex) {
+      throw new RuntimeException("Unable to load Adventure Test configuration", ex);
+    }
+    this.getProxy().getPluginManager().registerCommand(this, new ReloadCommand(this));
+    this.getProxy().getPluginManager().registerListener(this, this);
   }
 
   @Override
@@ -57,7 +73,19 @@ public class AdventureTestPlugin extends Plugin {
     return requireNonNull(this.adventure, "Adventure platform has not yet been initialized");
   }
 
+  public Configuration config() {
+    return this.config;
+  }
+
   /* package */ static @NonNull String permission(final @NonNull String base) {
     return ID + "." + base;
+  }
+
+  @EventHandler
+  public void onProxyPing(final ProxyPingEvent pong) {
+    final /* @Nullable */ Component motd = this.config.motd();
+    if(motd != null) {
+      pong.getResponse().setDescriptionComponent(BungeeCordComponentSerializer.get().serialize(this.config.motd())[0]); // TODO: how to downsample nicely?
+    }
   }
 }
