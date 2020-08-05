@@ -96,7 +96,7 @@ public class Configuration {
     if(message == null) {
       return null;
     }
-    return MiniMessage.withMarkDown().parse(message);
+    return MiniMessage.markdown().parse(message);
   }
 
   public Component motd() {

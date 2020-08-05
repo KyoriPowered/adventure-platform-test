@@ -75,7 +75,7 @@ public class AdventureTestPlugin extends JavaPlugin {
   }
 
   public ComponentSerializer<Component, ? extends Component, String> serializer() {
-    return MiniMessage.withMarkDown();
+    return MiniMessage.markdown();
   }
 
   public BukkitAudiences adventure() {
