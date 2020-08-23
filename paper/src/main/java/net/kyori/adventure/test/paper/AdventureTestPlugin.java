@@ -29,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.function.Consumer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.sound.Sound;
@@ -57,6 +58,7 @@ public class AdventureTestPlugin extends JavaPlugin {
   private static final TextColor RESPONSE_COLOR = TextColor.of(0x33ac88);
   private static final TextColor BAR_COLOR = TextColor.of(0xcc0044);
   private static final Duration DEF = Duration.of(5, ChronoUnit.SECONDS);
+  private static final Title.Times DEFAULT_TIME = Title.Times.of(DEF, DEF, DEF);
   private static final BossBar NOTIFICATION = BossBar.of(TextComponent.of("Welcome!", NamedTextColor.AQUA), .3f /* to see 1.8 Wither shimmer */, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
 
   private BukkitAudiences platform;
@@ -129,7 +131,7 @@ public class AdventureTestPlugin extends JavaPlugin {
         }
         final String titleStr = join(args, " ", 1);
         final Component title = this.serializer().deserialize(titleStr);
-        result.showTitle(Title.of(title, TextComponent.of("From adventure"), DEF, DEF, DEF));
+        result.showTitle(Title.of(title, TextComponent.of("From adventure"), DEFAULT_TIME));
         break;
       case "version":
         result.sendMessage(TextComponent.make("Adventure platform ", b -> {
@@ -165,6 +167,14 @@ public class AdventureTestPlugin extends JavaPlugin {
         break;
       case "stopsound":
         result.stopSound(SoundStop.all());
+        break;
+      case "book":
+        result.openBook(Book.builder()
+        .title(TextComponent.empty())
+        .author(TextComponent.empty())
+        .pages(TextComponent.of("Welcome to Adventure!", RESPONSE_COLOR),
+          TextComponent.of("This is a book to look at!", TextColor.of(0x8844bb)))
+        .build());
         break;
       default:
         result.sendMessage(TextComponent.of("Unknown sub-command: " + args[0], ERROR_COLOR));
