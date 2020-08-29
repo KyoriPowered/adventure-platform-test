@@ -10,6 +10,7 @@ repositories {
 }
 
 dependencies {
+  implementation(project(":test-platform"))
   implementation("net.kyori:adventure-platform-spongeapi:4.0.0-SNAPSHOT")
   annotationProcessor(shadow("org.spongepowered:spongeapi:7.2.0")!!)
 }
