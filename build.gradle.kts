@@ -19,6 +19,12 @@ subprojects {
     }
   }
 
+  tasks.withType<Javadoc>().configureEach {
+    (options as? CoreJavadocOptions)?.apply {
+      addBooleanOption("Xdoclint:-missing", true)
+    }
+  }
+
   dependencies {
     "implementation"("net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT")
     "checkstyle"("ca.stellardrift:stylecheck:0.1-SNAPSHOT")
