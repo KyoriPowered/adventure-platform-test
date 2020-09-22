@@ -20,7 +20,7 @@ subprojects {
   }
 
   dependencies {
-    "implementation"("net.kyori:adventure-text-minimessage:3.0.0-SNAPSHOT")
+    "implementation"("net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT")
     "checkstyle"("ca.stellardrift:stylecheck:0.1-SNAPSHOT")
   }
 
