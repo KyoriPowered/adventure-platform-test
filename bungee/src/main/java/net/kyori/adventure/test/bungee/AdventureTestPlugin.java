@@ -1,5 +1,5 @@
 /*
- * This file is part of adventure-testplugin, licensed under the MIT License.
+ * This file is part of adventure-platform-test, licensed under the MIT License.
  *
  * Copyright (c) 2017-2020 KyoriPowered
  *
@@ -24,68 +24,40 @@
 
 package net.kyori.adventure.test.bungee;
 
-import java.io.IOException;
-import net.kyori.adventure.platform.bungeecord.BungeeAudiences;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeCordComponentSerializer;
-import net.md_5.bungee.api.event.ProxyPingEvent;
-import net.md_5.bungee.api.plugin.Listener;
+import net.kyori.adventure.platform.bungeecord.BungeeAdventure;
+import net.kyori.adventure.platform.bungeecord.BungeeAudienceProvider;
+import net.kyori.adventure.test.AdventureCommand;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.event.EventHandler;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import static java.util.Objects.requireNonNull;
-
-/**
- * Entry point for the bungee Adventure test plugin.
- */
-public class AdventureTestPlugin extends Plugin implements Listener {
-
-  public static final TextColor COLOR_RESPONSE = TextColor.of(0xAA33CC);
-  public static final TextColor COLOR_ERROR = TextColor.of(0xFF0000);
-  private static final String ID = "adventure-testplugin";
-
-  private BungeeAudiences adventure;
-  private BossBarServerIndicator serverIndicators;
-  private Configuration config;
+public final class AdventureTestPlugin extends Plugin {
+  private BungeeAudienceProvider platform;
 
   @Override
   public void onEnable() {
-    this.adventure = BungeeAudiences.create(this);
-    this.serverIndicators = BossBarServerIndicator.create(this);
-    try {
-      this.config = Configuration.create(this.getDataFolder().toPath().resolve("config.yml"));
-    } catch(final IOException ex) {
-      throw new RuntimeException("Unable to load Adventure Test configuration", ex);
-    }
-    this.getProxy().getPluginManager().registerCommand(this, new ReloadCommand(this));
-    this.getProxy().getPluginManager().registerListener(this, this);
+    this.platform = BungeeAdventure.of(this);
+    this.getProxy().getPluginManager().registerCommand(this, new Command());
   }
 
   @Override
   public void onDisable() {
-    this.adventure.close();
-    this.adventure = null;
+    if(this.platform != null) {
+      this.platform.close();
+      this.platform = null;
+    }
   }
 
-  public BungeeAudiences adventure() {
-    return requireNonNull(this.adventure, "Adventure platform has not yet been initialized");
-  }
+  private final class Command extends net.md_5.bungee.api.plugin.Command {
+    private Command() {
+      super("adventure");
+    }
 
-  public Configuration config() {
-    return this.config;
-  }
-
-  /* package */ static @NonNull String permission(final @NonNull String base) {
-    return ID + "." + base;
-  }
-
-  @EventHandler
-  public void onProxyPing(final ProxyPingEvent pong) {
-    final /* @Nullable */ Component motd = this.config.motd();
-    if(motd != null) {
-      pong.getResponse().setDescriptionComponent(BungeeCordComponentSerializer.get().serialize(this.config.motd())[0]); // TODO: how to downsample nicely?
+    @Override
+    public void execute(final @NonNull CommandSender sender, final String @NonNull[] args) {
+      if(AdventureTestPlugin.this.platform != null) {
+        new AdventureCommand(args).accept(AdventureTestPlugin.this.platform.sender(sender));
+      }
     }
   }
 }

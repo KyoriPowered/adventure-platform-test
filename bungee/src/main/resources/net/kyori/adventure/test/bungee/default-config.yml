@@ -1,6 +1,0 @@
-# Adventure test plugin configuration
-# Some simple options
-
-messages:
-  # Server list ping response. Set to null to not override default
-  motd: '<dark_blue>Another Bungee server'

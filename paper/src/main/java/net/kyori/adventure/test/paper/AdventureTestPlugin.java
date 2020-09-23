@@ -1,5 +1,5 @@
 /*
- * This file is part of adventure-testplugin, licensed under the MIT License.
+ * This file is part of adventure-platform-test, licensed under the MIT License.
  *
  * Copyright (c) 2017-2020 KyoriPowered
  *
@@ -24,48 +24,20 @@
 
 package net.kyori.adventure.test.paper;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.util.function.Consumer;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.inventory.Book;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.sound.SoundStop;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
-import net.kyori.adventure.title.Title;
+import net.kyori.adventure.platform.bukkit.BukkitAdventure;
+import net.kyori.adventure.platform.bukkit.BukkitAudienceProvider;
+import net.kyori.adventure.test.AdventureCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import static java.util.Objects.requireNonNull;
-
-public class AdventureTestPlugin extends JavaPlugin {
-
-  private static final TextColor ERROR_COLOR = TextColor.of(0xff2222);
-  private static final TextColor RESPONSE_COLOR = TextColor.of(0x33ac88);
-  private static final TextColor BAR_COLOR = TextColor.of(0xcc0044);
-  private static final Duration DEF = Duration.of(5, ChronoUnit.SECONDS);
-  private static final Title.Times DEFAULT_TIME = Title.Times.of(DEF, DEF, DEF);
-  private static final BossBar NOTIFICATION = BossBar.of(TextComponent.of("Welcome!", NamedTextColor.AQUA), .3f /* to see 1.8 Wither shimmer */, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
-
-  private BukkitAudiences platform;
+public final class AdventureTestPlugin extends JavaPlugin {
+  private BukkitAudienceProvider platform;
 
   @Override
   public void onEnable() {
-    this.platform = BukkitAudiences.create(this);
+    this.platform = BukkitAdventure.of(this);
   }
 
   @Override
@@ -76,152 +48,12 @@ public class AdventureTestPlugin extends JavaPlugin {
     }
   }
 
-  public ComponentSerializer<Component, ? extends Component, String> serializer() {
-    return MiniMessage.markdown();
-  }
-
-  public BukkitAudiences adventure() {
-    return requireNonNull(this.platform, "Adventure platform not yet initialized");
-  }
-
-  /**
-   * Join the elements of an array together into a string.
-   *
-   * @param elements elements to join
-   * @param separator separator to use between strings
-   * @param startIdx index in the array to join from
-   * @return the string
-   */
-  private static String join(final @NonNull String @NonNull [] elements, final @NonNull String separator, final int startIdx) {
-    final StringBuilder ret = new StringBuilder();
-    for(int i = startIdx; i < elements.length; ++i) {
-      if(i != startIdx) {
-        ret.append(separator);
-      }
-      ret.append(elements[i]);
-    }
-    return ret.toString();
-  }
-
   @Override
   public boolean onCommand(final @NonNull CommandSender sender, final @NonNull Command command, final @NonNull String label, final @NonNull String @NonNull [] args) {
-    final Audience result = this.adventure().audience(sender);
-    if(args.length < 1) {
-      result.sendMessage(TextComponent.of("Subcommand required: countdown|bar|title|version|echo|sound", ERROR_COLOR));
+    if(this.platform == null) {
       return false;
     }
-    switch(args[0]) {
-      case "countdown":
-        this.beginCountdown(TextComponent.of("Until the end", BAR_COLOR), 10, result, viewer -> {
-          viewer.sendMessage(TextComponent.of("Countdown complete", RESPONSE_COLOR));
-          viewer.sendActionBar(TextComponent.of("Countdown complete", RESPONSE_COLOR));
-        });
-        break;
-      case "bar":
-        if(!(sender instanceof Player)) {
-          return true;
-        }
-        result.sendActionBar(TextComponent.of("Test"));
-        break;
-
-      case "title":
-        if(args.length < 2) {
-          result.sendMessage(TextComponent.of("Usage: title <title>", ERROR_COLOR));
-          return false;
-        }
-        final String titleStr = join(args, " ", 1);
-        final Component title = this.serializer().deserialize(titleStr);
-        result.showTitle(Title.of(title, TextComponent.of("From adventure"), DEFAULT_TIME));
-        break;
-      case "version":
-        result.sendMessage(TextComponent.make("Adventure platform ", b -> {
-          b.append(TextComponent.of(this.platform.getClass().getPackage().getSpecificationVersion(), NamedTextColor.LIGHT_PURPLE));
-          b.color(NamedTextColor.DARK_PURPLE);
-        }));
-        break;
-      case "echo":
-        final String value = join(args, " ", 1);
-        final Component text = this.serializer().deserialize(value);
-        result.sendMessage(text);
-        break;
-      case "baron":
-        result.showBossBar(NOTIFICATION);
-        break;
-      case "baroff":
-        result.hideBossBar(NOTIFICATION);
-        break;
-      case "sound":
-        if(args.length < 2) {
-          result.sendMessage(TextComponent.of("Not enough args! Usage: /adventure sound <id> [source]", ERROR_COLOR));
-          return true;
-        }
-        Sound.Source source = Sound.Source.AMBIENT;
-        if(args.length >= 3) {
-          source = Sound.Source.NAMES.value(args[2]);
-          if(source == null) {
-            result.sendMessage(TextComponent.builder("Unknown source: ", ERROR_COLOR).append(TextComponent.of(args[2], Style.of(TextDecoration.ITALIC))).build());
-            return true;
-          }
-        }
-        result.playSound(Sound.of(Key.of(args[1]), source, 1f, 1f));
-        break;
-      case "stopsound":
-        result.stopSound(SoundStop.all());
-        break;
-      case "book":
-        result.openBook(Book.builder()
-        .title(TextComponent.empty())
-        .author(TextComponent.empty())
-        .pages(TextComponent.of("Welcome to Adventure!", RESPONSE_COLOR),
-          TextComponent.of("This is a book to look at!", TextColor.of(0x8844bb)))
-        .build());
-        break;
-      default:
-        result.sendMessage(TextComponent.of("Unknown sub-command: " + args[0], ERROR_COLOR));
-        return false;
-    }
+    new AdventureCommand(args).accept(this.platform.sender(sender));
     return true;
-  }
-
-  /**
-   * Boss bar animation update frequency, in ticks
-   */
-  private static final int UPDATE_FREQUENCY = 2;
-
-  /**
-   * Begin a countdown shown on a boss bar, completing with the specified action
-   *
-   * @param title Boss bar title
-   * @param timeSeconds seconds boss bar will last
-   * @param targets viewers of the action
-   * @param completionAction callback to execute when countdown is complete
-   */
-  private void beginCountdown(final @NonNull Component title, final int timeSeconds, final @NonNull Audience targets, final @NonNull Consumer<Audience> completionAction) {
-    final BossBar bar = BossBar.of(title, 1, BossBar.Color.RED, BossBar.Overlay.PROGRESS);
-
-    final int timeMs = timeSeconds * 1000; // total time ms
-    final long[] times = new long[]{timeMs, System.currentTimeMillis()}; // remaining time in ms, last update time
-    final BukkitRunnable run = new BukkitRunnable() {
-      @Override
-      public void run() {
-        final long now = System.currentTimeMillis();
-        final long dt = now - times[1];
-        times[0] -= dt;
-        times[1] = now;
-
-        if(times[0] <= 0) { // we are complete
-          this.cancel();
-          targets.hideBossBar(bar);
-          completionAction.accept(targets);
-          return;
-        }
-
-        final float newFraction = bar.percent() - (dt / (float) timeMs);
-        assert newFraction > 0;
-        bar.percent(newFraction);
-      }
-    };
-    run.runTaskTimer(this, 0, UPDATE_FREQUENCY);
-    targets.showBossBar(bar);
   }
 }

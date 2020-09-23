@@ -10,6 +10,7 @@ repositories {
 }
 
 dependencies {
+  implementation(project(":test-platform"))
   implementation("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
   shadow("com.destroystokyo.paper:paper-api:1.15.2-R0.1-SNAPSHOT")
 }
