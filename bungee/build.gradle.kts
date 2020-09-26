@@ -1,6 +1,6 @@
 plugins {
   id("com.github.johnrengelman.shadow") // version in root pom
-  id("net.minecrell.plugin-yml.bungee") version "0.3.0"
+  id("kr.entree.spigradle.bungee") version "2.2.3"
 }
 
 dependencies {
@@ -14,15 +14,13 @@ opinionated {
   mit()
 }
 
-bungee {
-  main = "net.kyori.adventure.test.bungee.AdventureTestPlugin"
-}
-
 tasks.shadowJar.configure {
   minimize()
-  sequenceOf("net.kyori.adventure", "net.kyori.examination").forEach {
-    relocate(it, "net.kyori.adventure.test.bungee.ext.$it") {
-      exclude("net/kyori/adventure/test/**")
+  if ("runBungee" !in gradle.startParameter.taskNames && "debugBungee" !in gradle.startParameter.taskNames) {
+    sequenceOf("net.kyori.adventure", "net.kyori.examination").forEach {
+      relocate(it, "net.kyori.adventure.test.bungee.ext.$it") {
+        exclude("net/kyori/adventure/test/**")
+      }
     }
   }
   dependencies {

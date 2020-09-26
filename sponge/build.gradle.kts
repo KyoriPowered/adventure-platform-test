@@ -2,7 +2,7 @@ import ca.stellardrift.build.common.sponge
 
 plugins {
   id("com.github.johnrengelman.shadow") // version in root project
-  id("ca.stellardrift.templating") version "3.0"
+  id("ca.stellardrift.templating") version "3.1"
 }
 
 repositories {
@@ -11,7 +11,7 @@ repositories {
 
 dependencies {
   implementation("net.kyori:adventure-platform-spongeapi:4.0.0-SNAPSHOT")
-  annotationProcessor(shadow("org.spongepowered:spongeapi:7.2.0")!!)
+  annotationProcessor(shadow("org.spongepowered:spongeapi:7.3.0")!!)
 }
 
 opinionated {

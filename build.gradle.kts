@@ -1,6 +1,7 @@
 plugins {
   id("ca.stellardrift.opinionated") version "3.1" apply false
-  id("com.github.johnrengelman.shadow") version "5.2.0" apply false
+  id("com.github.johnrengelman.shadow") version "6.0.0" apply false
+  id("com.github.ben-manes.versions") version "0.33.0"
 }
 
 group = "net.kyori"
