@@ -9,11 +9,6 @@ dependencies {
   shadow("net.md-5:bungeecord-api:1.15-SNAPSHOT")
 }
 
-indra {
-  github("KyoriPowered", "adventure-platform-test")
-  mitLicense()
-}
-
 tasks.shadowJar.configure {
   minimize()
   if ("runBungee" !in gradle.startParameter.taskNames && "debugBungee" !in gradle.startParameter.taskNames) {

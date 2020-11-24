@@ -15,11 +15,6 @@ dependencies {
   annotationProcessor(shadow("org.spongepowered:spongeapi:7.3.0")!!)
 }
 
-indra {
-  mitLicense()
-  github("KyoriPowered", "adventure-platform-test")
-}
-
 tasks.shadowJar.configure {
   minimize()
   sequenceOf("net.kyori.adventure", "net.kyori.examination").forEach {

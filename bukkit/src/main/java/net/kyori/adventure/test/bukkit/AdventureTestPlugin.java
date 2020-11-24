@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.adventure.test.paper;
+package net.kyori.adventure.test.bukkit;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;

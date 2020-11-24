@@ -1,3 +1,6 @@
+import net.kyori.indra.IndraExtension
+import net.kyori.indra.sonatypeSnapshots
+
 plugins {
   val indraVersion = "1.2.0"
   id("net.kyori.indra") version indraVersion apply false
@@ -5,9 +8,11 @@ plugins {
   id("com.github.ben-manes.versions") version "0.36.0"
 }
 
-group = "net.kyori"
-version = "0.1-SNAPSHOT"
-description = "Test plugins for the Adventure library"
+allprojects {
+  group = "net.kyori"
+  version = "0.1-SNAPSHOT"
+  description = "Test plugins for the Adventure library"
+}
 
 subprojects {
   apply(plugin = "net.kyori.indra")
@@ -17,15 +22,12 @@ subprojects {
   repositories {
     mavenLocal()
     jcenter()
-    maven(url = "https://oss.sonatype.org/content/groups/public/") {
-      name = "sonatype-oss"
-    }
+    sonatypeSnapshots()
   }
 
-  tasks.withType<Javadoc>().configureEach {
-    (options as? CoreJavadocOptions)?.apply {
-      addBooleanOption("Xdoclint:-missing", true)
-    }
+  extensions.getByType(IndraExtension::class).apply {
+    github("KyoriPowered", "adventure-platform-test")
+    mitLicense()
   }
 
   dependencies {

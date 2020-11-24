@@ -17,11 +17,6 @@ dependencies {
   shadow(paper("$mcVersion-R0.1-SNAPSHOT"))
 }
 
-indra {
-  mitLicense()
-  github("KyoriPowered", "adventure-platform-test")
-}
-
 spigot {
   apiVersion = "1.13"
 
@@ -44,7 +39,7 @@ tasks.shadowJar.configure {
   // Don't relocate in dev (for debugging)
   if ("debugPaper" !in gradle.startParameter.taskNames) {
     sequenceOf("net.kyori.adventure", "net.kyori.examination").forEach {
-      relocate(it, "net.kyori.adventure.test.paper.ext.$it") {
+      relocate(it, "net.kyori.adventure.test.bukkit.ext.$it") {
         exclude("net/kyori/adventure/test/**")
       }
     }
