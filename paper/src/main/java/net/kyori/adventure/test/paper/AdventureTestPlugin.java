@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package net.kyori.adventure.test.paper;
 
 import java.time.Duration;
@@ -35,7 +34,6 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
@@ -54,12 +52,12 @@ import static java.util.Objects.requireNonNull;
 
 public class AdventureTestPlugin extends JavaPlugin {
 
-  private static final TextColor ERROR_COLOR = TextColor.of(0xff2222);
-  private static final TextColor RESPONSE_COLOR = TextColor.of(0x33ac88);
-  private static final TextColor BAR_COLOR = TextColor.of(0xcc0044);
+  private static final TextColor ERROR_COLOR = TextColor.color(0xff2222);
+  private static final TextColor RESPONSE_COLOR = TextColor.color(0x33ac88);
+  private static final TextColor BAR_COLOR = TextColor.color(0xcc0044);
   private static final Duration DEF = Duration.of(5, ChronoUnit.SECONDS);
   private static final Title.Times DEFAULT_TIME = Title.Times.of(DEF, DEF, DEF);
-  private static final BossBar NOTIFICATION = BossBar.of(TextComponent.of("Welcome!", NamedTextColor.AQUA), .3f /* to see 1.8 Wither shimmer */, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
+  private static final BossBar NOTIFICATION = BossBar.bossBar(Component.text("Welcome!", NamedTextColor.AQUA), .3f /* to see 1.8 Wither shimmer */, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
 
   private BukkitAudiences platform;
 
@@ -105,38 +103,39 @@ public class AdventureTestPlugin extends JavaPlugin {
 
   @Override
   public boolean onCommand(final @NonNull CommandSender sender, final @NonNull Command command, final @NonNull String label, final @NonNull String @NonNull [] args) {
-    final Audience result = this.adventure().audience(sender);
+    final Audience result = this.adventure().sender(sender);
     if(args.length < 1) {
-      result.sendMessage(TextComponent.of("Subcommand required: countdown|bar|title|version|echo|sound", ERROR_COLOR));
+      result.sendMessage(Component.text("Subcommand required: countdown|bar|title|version|echo|sound", ERROR_COLOR));
       return false;
     }
     switch(args[0]) {
       case "countdown":
-        this.beginCountdown(TextComponent.of("Until the end", BAR_COLOR), 10, result, viewer -> {
-          viewer.sendMessage(TextComponent.of("Countdown complete", RESPONSE_COLOR));
-          viewer.sendActionBar(TextComponent.of("Countdown complete", RESPONSE_COLOR));
+        this.beginCountdown(Component.text("Until the end", BAR_COLOR), 10, result, viewer -> {
+          viewer.sendMessage(Component.text("Countdown complete", RESPONSE_COLOR));
+          viewer.sendActionBar(Component.text("Countdown complete", RESPONSE_COLOR));
         });
         break;
       case "bar":
         if(!(sender instanceof Player)) {
           return true;
         }
-        result.sendActionBar(TextComponent.of("Test"));
+        result.sendActionBar(Component.text("Test"));
         break;
 
       case "title":
         if(args.length < 2) {
-          result.sendMessage(TextComponent.of("Usage: title <title>", ERROR_COLOR));
+          result.sendMessage(Component.text("Usage: title <title>", ERROR_COLOR));
           return false;
         }
         final String titleStr = join(args, " ", 1);
         final Component title = this.serializer().deserialize(titleStr);
-        result.showTitle(Title.of(title, TextComponent.of("From adventure"), DEFAULT_TIME));
+        result.showTitle(Title.title(title, Component.text("From adventure"), DEFAULT_TIME));
         break;
       case "version":
-        result.sendMessage(TextComponent.make("Adventure platform ", b -> {
-          b.append(TextComponent.of(this.platform.getClass().getPackage().getSpecificationVersion(), NamedTextColor.LIGHT_PURPLE));
-          b.color(NamedTextColor.DARK_PURPLE);
+        result.sendMessage(Component.text(b -> {
+          b.content("Adventure platform")
+            .append(Component.text(this.platform.getClass().getPackage().getSpecificationVersion(), NamedTextColor.LIGHT_PURPLE))
+            .color(NamedTextColor.DARK_PURPLE);
         }));
         break;
       case "echo":
@@ -152,32 +151,32 @@ public class AdventureTestPlugin extends JavaPlugin {
         break;
       case "sound":
         if(args.length < 2) {
-          result.sendMessage(TextComponent.of("Not enough args! Usage: /adventure sound <id> [source]", ERROR_COLOR));
+          result.sendMessage(Component.text("Not enough args! Usage: /adventure sound <id> [source]", ERROR_COLOR));
           return true;
         }
         Sound.Source source = Sound.Source.AMBIENT;
         if(args.length >= 3) {
           source = Sound.Source.NAMES.value(args[2]);
           if(source == null) {
-            result.sendMessage(TextComponent.builder("Unknown source: ", ERROR_COLOR).append(TextComponent.of(args[2], Style.of(TextDecoration.ITALIC))).build());
+            result.sendMessage(Component.text("Unknown source: ", ERROR_COLOR).append(Component.text(args[2], Style.style(TextDecoration.ITALIC))));
             return true;
           }
         }
-        result.playSound(Sound.of(Key.of(args[1]), source, 1f, 1f));
+        result.playSound(Sound.sound(Key.key(args[1]), source, 1f, 1f));
         break;
       case "stopsound":
         result.stopSound(SoundStop.all());
         break;
       case "book":
         result.openBook(Book.builder()
-        .title(TextComponent.empty())
-        .author(TextComponent.empty())
-        .pages(TextComponent.of("Welcome to Adventure!", RESPONSE_COLOR),
-          TextComponent.of("This is a book to look at!", TextColor.of(0x8844bb)))
+        .title(Component.empty())
+        .author(Component.empty())
+        .pages(Component.text("Welcome to Adventure!", RESPONSE_COLOR),
+          Component.text("This is a book to look at!", TextColor.color(0x8844bb)))
         .build());
         break;
       default:
-        result.sendMessage(TextComponent.of("Unknown sub-command: " + args[0], ERROR_COLOR));
+        result.sendMessage(Component.text("Unknown sub-command: " + args[0], ERROR_COLOR));
         return false;
     }
     return true;
@@ -197,7 +196,7 @@ public class AdventureTestPlugin extends JavaPlugin {
    * @param completionAction callback to execute when countdown is complete
    */
   private void beginCountdown(final @NonNull Component title, final int timeSeconds, final @NonNull Audience targets, final @NonNull Consumer<Audience> completionAction) {
-    final BossBar bar = BossBar.of(title, 1, BossBar.Color.RED, BossBar.Overlay.PROGRESS);
+    final BossBar bar = BossBar.bossBar(title, 1, BossBar.Color.RED, BossBar.Overlay.PROGRESS);
 
     final int timeMs = timeSeconds * 1000; // total time ms
     final long[] times = new long[]{timeMs, System.currentTimeMillis()}; // remaining time in ms, last update time
@@ -216,9 +215,9 @@ public class AdventureTestPlugin extends JavaPlugin {
           return;
         }
 
-        final float newFraction = bar.percent() - (dt / (float) timeMs);
+        final float newFraction = bar.progress() - (dt / (float) timeMs);
         assert newFraction > 0;
-        bar.percent(newFraction);
+        bar.progress(newFraction);
       }
     };
     run.runTaskTimer(this, 0, UPDATE_FREQUENCY);

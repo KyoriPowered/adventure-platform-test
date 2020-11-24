@@ -21,12 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package net.kyori.adventure.test.bungee;
 
 import java.io.IOException;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 
@@ -40,17 +39,17 @@ public class ReloadCommand extends Command {
 
   @Override
   public void execute(final CommandSender sender, final String[] args) {
-    final Audience output = this.plugin.adventure().audience(sender);
+    final Audience output = this.plugin.adventure().sender(sender);
     if(args.length > 0) {
-      output.sendMessage(TextComponent.of("Too many arguments!", AdventureTestPlugin.COLOR_ERROR));
+      output.sendMessage(Component.text("Too many arguments!", AdventureTestPlugin.COLOR_ERROR));
       return;
     }
     this.plugin.getProxy().getScheduler().runAsync(this.plugin, () -> {
       try {
         this.plugin.config().reload();
-        output.sendMessage(TextComponent.of("Successfully reloaded configuration!", AdventureTestPlugin.COLOR_RESPONSE));
+        output.sendMessage(Component.text("Successfully reloaded configuration!", AdventureTestPlugin.COLOR_RESPONSE));
       } catch(final IOException e) {
-        output.sendMessage(TextComponent.of("Failed to reload configuration", AdventureTestPlugin.COLOR_ERROR));
+        output.sendMessage(Component.text("Failed to reload configuration", AdventureTestPlugin.COLOR_ERROR));
       }
     });
   }

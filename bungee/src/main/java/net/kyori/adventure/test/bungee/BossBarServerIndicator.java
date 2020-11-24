@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package net.kyori.adventure.test.bungee;
 
 import java.util.Map;
@@ -30,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.platform.AudienceProvider;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -81,8 +79,8 @@ public final class BossBarServerIndicator implements Listener {
 
   private void updateOrCreateBar(final @NonNull ProxiedPlayer player, final @NonNull String serverName) {
     final BossBar.Color barColor = COLORS[Math.abs(serverName.hashCode() % COLORS.length)];
-    final Component nameComponent = TextComponent.builder("You are connected to: ", NamedTextColor.GRAY)
-      .append(TextComponent.of(serverName, color(barColor))).build();
+    final Component nameComponent = Component.text("You are connected to: ", NamedTextColor.GRAY)
+      .append(Component.text(serverName, color(barColor)));
 
     // Create and show bar if necessary (for first join)
     final BossBar bar = this.indicators.computeIfAbsent(player.getUniqueId(), ply -> {
@@ -90,7 +88,7 @@ public final class BossBarServerIndicator implements Listener {
         return null;
       }
 
-      final BossBar ret = BossBar.of(nameComponent, 1f, barColor, BossBar.Overlay.NOTCHED_20);
+      final BossBar ret = BossBar.bossBar(nameComponent, 1f, barColor, BossBar.Overlay.NOTCHED_20);
       if(this.visible) {
         this.adventure.player(ply).showBossBar(ret);
       }

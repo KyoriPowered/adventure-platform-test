@@ -4,14 +4,14 @@ plugins {
 }
 
 dependencies {
-  implementation("net.kyori:adventure-text-minimessage:3.0.0-SNAPSHOT")
+  implementation("net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT")
   implementation("net.kyori:adventure-platform-bungeecord:4.0.0-SNAPSHOT")
   shadow("net.md-5:bungeecord-api:1.15-SNAPSHOT")
 }
 
-opinionated {
+indra {
   github("KyoriPowered", "adventure-platform-test")
-  mit()
+  mitLicense()
 }
 
 tasks.shadowJar.configure {

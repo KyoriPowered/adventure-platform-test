@@ -21,14 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package net.kyori.adventure.test.bungee;
 
 import java.io.IOException;
 import net.kyori.adventure.platform.bungeecord.BungeeAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeCordComponentSerializer;
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -42,8 +41,8 @@ import static java.util.Objects.requireNonNull;
  */
 public class AdventureTestPlugin extends Plugin implements Listener {
 
-  public static final TextColor COLOR_RESPONSE = TextColor.of(0xAA33CC);
-  public static final TextColor COLOR_ERROR = TextColor.of(0xFF0000);
+  public static final TextColor COLOR_RESPONSE = TextColor.color(0xAA33CC);
+  public static final TextColor COLOR_ERROR = TextColor.color(0xFF0000);
   private static final String ID = "adventure-testplugin";
 
   private BungeeAudiences adventure;
@@ -85,7 +84,7 @@ public class AdventureTestPlugin extends Plugin implements Listener {
   public void onProxyPing(final ProxyPingEvent pong) {
     final /* @Nullable */ Component motd = this.config.motd();
     if(motd != null) {
-      pong.getResponse().setDescriptionComponent(BungeeCordComponentSerializer.get().serialize(this.config.motd())[0]); // TODO: how to downsample nicely?
+      pong.getResponse().setDescriptionComponent(BungeeComponentSerializer.get().serialize(this.config.motd())[0]); // TODO: how to downsample nicely?
     }
   }
 }

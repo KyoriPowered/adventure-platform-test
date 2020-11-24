@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package net.kyori.adventure.test.sponge;
 
 import com.google.gson.JsonParseException;
@@ -29,9 +28,8 @@ import com.google.inject.Inject;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.spongeapi.SpongeAudiences;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -82,9 +80,10 @@ public class AdventureTestPlugin {
   @Listener
   public void playerJoin(final ClientConnectionEvent.@NonNull Join event) {
     final Player joining = event.getTargetEntity();
-    final Audience adventure = this.adventure().audience(joining);
-    adventure.sendActionBar(TextComponent.make("Welcome to the ", b -> {
-      b.append(TextComponent.of("adventure test plugin", NamedTextColor.BLUE))
+    final Audience adventure = this.adventure().receiver(joining);
+    adventure.sendActionBar(Component.text(b -> {
+      b.content("Welcome to the ")
+      .append(Component.text("adventure test plugin", NamedTextColor.BLUE))
         .color(NamedTextColor.AQUA);
     }));
   }
@@ -107,13 +106,13 @@ public class AdventureTestPlugin {
       .permission(permission("echo"))
       .arguments(remainingRawJoinedStrings(Text.of("message")))
       .executor((src, args) -> {
-        final Audience audience = this.adventure().audience(src);
+        final Audience audience = this.adventure().receiver(src);
         final String raw = args.<String>getOne("message")
           .orElseThrow(() -> new CommandException(Text.of("No message was provided!")));
         final Component component;
 
         try {
-          component = GsonComponentSerializer.gson().deserialize(raw);
+          component = MiniMessage.get().parse(raw);
         } catch(final JsonParseException ex) {
           throw new CommandException(Text.of("Unable to parse JSON"), ex);
         }

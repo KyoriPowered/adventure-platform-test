@@ -1,12 +1,13 @@
-import ca.stellardrift.build.common.sponge
 
 plugins {
   id("com.github.johnrengelman.shadow") // version in root project
-  id("ca.stellardrift.templating") version "3.1"
+  id("ca.stellardrift.templating") version "4.0.1"
 }
 
 repositories {
-  sponge()
+  maven(url = "https://repo-new.spongepowered.org/repository/maven-public") {
+    name = "sponge"
+  }
 }
 
 dependencies {
@@ -14,8 +15,8 @@ dependencies {
   annotationProcessor(shadow("org.spongepowered:spongeapi:7.3.0")!!)
 }
 
-opinionated {
-  mit()
+indra {
+  mitLicense()
   github("KyoriPowered", "adventure-platform-test")
 }
 

@@ -1,5 +1,5 @@
-import ca.stellardrift.build.common.paper
 import kr.entree.spigradle.kotlin.paper
+import kr.entree.spigradle.kotlin.papermc
 
 plugins {
   id("com.github.johnrengelman.shadow") // version defined in root project
@@ -7,18 +7,18 @@ plugins {
 }
 
 repositories {
-  paper()
+  papermc()
 }
 
-val mcVersion = "1.16.3"
+val mcVersion = "1.16.4"
 
 dependencies {
   implementation("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
   shadow(paper("$mcVersion-R0.1-SNAPSHOT"))
 }
 
-opinionated {
-  mit()
+indra {
+  mitLicense()
   github("KyoriPowered", "adventure-platform-test")
 }
 

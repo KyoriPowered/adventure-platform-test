@@ -1,7 +1,8 @@
 plugins {
-  id("ca.stellardrift.opinionated") version "3.1" apply false
-  id("com.github.johnrengelman.shadow") version "6.0.0" apply false
-  id("com.github.ben-manes.versions") version "0.33.0"
+  val indraVersion = "1.2.0"
+  id("net.kyori.indra") version indraVersion apply false
+  id("com.github.johnrengelman.shadow") version "6.1.0" apply false
+  id("com.github.ben-manes.versions") version "0.36.0"
 }
 
 group = "net.kyori"
@@ -9,8 +10,9 @@ version = "0.1-SNAPSHOT"
 description = "Test plugins for the Adventure library"
 
 subprojects {
-  apply(plugin = "ca.stellardrift.opinionated")
-  apply(plugin = "checkstyle")
+  apply(plugin = "net.kyori.indra")
+  apply(plugin = "net.kyori.indra.license-header")
+  apply(plugin = "net.kyori.indra.checkstyle")
 
   repositories {
     mavenLocal()
@@ -28,14 +30,7 @@ subprojects {
 
   dependencies {
     "implementation"("net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT")
-    "checkstyle"("ca.stellardrift:stylecheck:0.1-SNAPSHOT")
-  }
-
-  extensions.getByType(CheckstyleExtension::class).apply {
-    val checkstyleDir = rootProject.projectDir.resolve(".checkstyle")
-    toolVersion = "8.34"
-    configDirectory.set(checkstyleDir)
-    configProperties = mapOf("basedir" to checkstyleDir)
+    "checkstyle"("ca.stellardrift:stylecheck:0.1")
   }
 }
 
