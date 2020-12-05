@@ -9,6 +9,12 @@ dependencies {
   shadow("net.md-5:bungeecord-api:1.15-SNAPSHOT")
 }
 
+bungee {
+  debug {
+    jvmArgs = jvmArgs + listOf("-Dnet.kyori.adventure.debug=true")
+  }
+}
+
 tasks.shadowJar.configure {
   minimize()
   if ("runBungee" !in gradle.startParameter.taskNames && "debugBungee" !in gradle.startParameter.taskNames) {

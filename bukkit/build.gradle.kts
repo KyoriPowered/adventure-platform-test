@@ -22,7 +22,7 @@ spigot {
 
   debug {
     buildVersion = mcVersion
-    jvmArgs = jvmArgs + listOf("-Dnet.kyori.adventure.printErrors=true", "-Dnet.kyori.adventure.printChosenHandler=true")
+    jvmArgs = jvmArgs + listOf("-Dnet.kyori.adventure.debug=true")
   }
 
   commands {

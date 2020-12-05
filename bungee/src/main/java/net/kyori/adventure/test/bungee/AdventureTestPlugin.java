@@ -33,6 +33,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -82,7 +83,7 @@ public class AdventureTestPlugin extends Plugin implements Listener {
 
   @EventHandler
   public void onProxyPing(final ProxyPingEvent pong) {
-    final /* @Nullable */ Component motd = this.config.motd();
+    final @Nullable Component motd = this.config.motd();
     if(motd != null) {
       pong.getResponse().setDescriptionComponent(BungeeComponentSerializer.get().serialize(this.config.motd())[0]); // TODO: how to downsample nicely?
     }

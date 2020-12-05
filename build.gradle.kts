@@ -34,5 +34,9 @@ subprojects {
     "implementation"("net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT")
     "checkstyle"("ca.stellardrift:stylecheck:0.1")
   }
+
+  tasks.withType(Javadoc::class) {
+    onlyIf { false }
+  }
 }
 

@@ -175,6 +175,10 @@ public class AdventureTestPlugin extends JavaPlugin {
           Component.text("This is a book to look at!", TextColor.color(0x8844bb)))
         .build());
         break;
+      case "tlist":
+        result.sendPlayerListHeader(Component.text("Adventure", TextColor.color(0x123456)));
+        result.sendPlayerListFooter(Component.text("test platform!", TextColor.color(0x654321)));
+        break;
       default:
         result.sendMessage(Component.text("Unknown sub-command: " + args[0], ERROR_COLOR));
         return false;
