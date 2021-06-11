@@ -1,11 +1,11 @@
 import net.kyori.indra.IndraExtension
-import net.kyori.indra.sonatypeSnapshots
+import net.kyori.indra.repository.sonatypeSnapshots
 
 plugins {
-  val indraVersion = "1.2.0"
+  val indraVersion = "2.0.4"
   id("net.kyori.indra") version indraVersion apply false
-  id("com.github.johnrengelman.shadow") version "6.1.0" apply false
-  id("com.github.ben-manes.versions") version "0.36.0"
+  id("com.github.johnrengelman.shadow") version "7.0.0" apply false
+  id("com.github.ben-manes.versions") version "0.38.0"
 }
 
 allprojects {
@@ -20,8 +20,8 @@ subprojects {
   apply(plugin = "net.kyori.indra.checkstyle")
 
   repositories {
-    mavenLocal()
-    jcenter()
+    // mavenLocal()
+    mavenCentral()
     sonatypeSnapshots()
   }
 
@@ -31,7 +31,7 @@ subprojects {
   }
 
   dependencies {
-    "implementation"("net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT")
+    "implementation"("net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT")
     "checkstyle"("ca.stellardrift:stylecheck:0.1")
   }
 

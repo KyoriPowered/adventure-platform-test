@@ -65,6 +65,7 @@ public class AdventureTestPlugin extends Plugin implements Listener {
 
   @Override
   public void onDisable() {
+    this.serverIndicators.hideAll();
     this.adventure.close();
     this.adventure = null;
   }

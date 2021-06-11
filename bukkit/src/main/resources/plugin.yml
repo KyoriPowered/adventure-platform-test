@@ -1,0 +1,12 @@
+name: adventure-test-bukkit
+description: Test plugins for the Adventure library
+author: KyoriPowered
+version: ${version}
+
+api-version: 1.13
+main: net.kyori.adventure.test.bukkit.AdventureTestPlugin
+
+commands:
+  adventure:
+    description: Test command for adventure
+    permission: adventure.test

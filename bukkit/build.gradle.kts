@@ -1,54 +1,52 @@
-import kr.entree.spigradle.kotlin.paper
-import kr.entree.spigradle.kotlin.papermc
-
 plugins {
   id("com.github.johnrengelman.shadow") // version defined in root project
-  id("kr.entree.spigradle") version "2.2.3"
+  id("xyz.jpenilla.run-paper") version "1.0.2"
 }
 
 repositories {
-  papermc()
+  maven("https://papermc.io/repo/repository/maven-public/") {
+    name = "papermc"
+  }
 }
 
-val mcVersion = "1.16.4"
+val mcVersion = "1.16.5"
 
 dependencies {
   implementation("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
-  shadow(paper("$mcVersion-R0.1-SNAPSHOT"))
+  shadow("com.destroystokyo.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")
 }
 
-spigot {
-  apiVersion = "1.13"
-
-  debug {
-    buildVersion = mcVersion
-    jvmArgs = jvmArgs + listOf("-Dnet.kyori.adventure.debug=true")
+tasks {
+  runServer {
+    minecraftVersion(mcVersion)
+    jvmArgs("-Dnet.kyori.adventure.debug=true")
   }
 
-  commands {
-    create("adventure") {
-      description = "Test command for adventure"
-      permission = "adventure.test"
-    }
-  }
-}
+  shadowJar {
+    minimize()
 
-tasks.shadowJar.configure {
-  minimize()
-
-  // Don't relocate in dev (for debugging)
-  if ("debugPaper" !in gradle.startParameter.taskNames) {
-    sequenceOf("net.kyori.adventure", "net.kyori.examination").forEach {
-      relocate(it, "net.kyori.adventure.test.bukkit.ext.$it") {
-        exclude("net/kyori/adventure/test/**")
+    // Don't relocate in dev (for debugging)
+    // if ("runServer" !in gradle.startParameter.taskNames) {
+      sequenceOf("net.kyori.adventure", "net.kyori.examination").forEach {
+        relocate(it, "net.kyori.adventure.test.bukkit.ext.$it") {
+          exclude("net/kyori/adventure/test/**")
+        }
       }
+    // }
+    dependencies {
+      exclude(dependency("org.checkerframework:.*"))
     }
   }
-  dependencies {
-    exclude(dependency("org.checkerframework:.*"))
-  }
-}
 
-tasks.assemble.configure {
-  dependsOn(tasks.shadowJar)
+  assemble {
+    dependsOn(shadowJar)
+  }
+
+  processResources {
+    inputs.property("meta.version", project.version)
+
+    filesMatching("plugin.yml") {
+      expand("version" to project.version)
+    }
+  }
 }

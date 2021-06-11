@@ -34,23 +34,28 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.kyori.adventure.title.Title;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static java.util.Objects.requireNonNull;
 
-public class AdventureTestPlugin extends JavaPlugin {
+public class AdventureTestPlugin extends JavaPlugin implements Listener {
 
   private static final TextColor ERROR_COLOR = TextColor.color(0xff2222);
   private static final TextColor RESPONSE_COLOR = TextColor.color(0x33ac88);
@@ -109,6 +114,15 @@ public class AdventureTestPlugin extends JavaPlugin {
       return false;
     }
     switch(args[0]) {
+      case "serializer":
+        final BaseComponent message = new TextComponent();
+        message.addExtra("hello there! adventure: ");
+        message.addExtra(BungeeComponentSerializer.get().serialize(Component.text("hi").hoverEvent(HoverEvent.showText(Component.text("hoveringggg"))))[0]);
+        sender.sendMessage(message);
+        break;
+      case "followsound":
+        result.playSound(Sound.sound(Key.key("music_disc.pigstep"), Sound.Source.PLAYER, 1f, 1f), Sound.Emitter.self());
+        break;
       case "countdown":
         this.beginCountdown(Component.text("Until the end", BAR_COLOR), 10, result, viewer -> {
           viewer.sendMessage(Component.text("Countdown complete", RESPONSE_COLOR));
@@ -187,12 +201,12 @@ public class AdventureTestPlugin extends JavaPlugin {
   }
 
   /**
-   * Boss bar animation update frequency, in ticks
+   * Boss bar animation update frequency, in ticks.
    */
   private static final int UPDATE_FREQUENCY = 2;
 
   /**
-   * Begin a countdown shown on a boss bar, completing with the specified action
+   * Begin a countdown shown on a boss bar, completing with the specified action.
    *
    * @param title Boss bar title
    * @param timeSeconds seconds boss bar will last
