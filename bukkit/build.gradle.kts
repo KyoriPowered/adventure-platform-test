@@ -1,6 +1,6 @@
 plugins {
   id("com.github.johnrengelman.shadow") // version defined in root project
-  id("xyz.jpenilla.run-paper") version "1.0.2"
+  id("xyz.jpenilla.run-paper") version "1.0.3"
 }
 
 repositories {
@@ -9,17 +9,51 @@ repositories {
   }
 }
 
-val mcVersion = "1.16.5"
+val mcVersion = "1.17.1"
 
 dependencies {
   implementation("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
-  shadow("com.destroystokyo.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")
+  shadow("io.papermc.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")
+}
+
+configurations {
+  sequenceOf(compileClasspath, runtimeClasspath).forEach {
+    it.configure {
+      attributes {
+        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 16)
+      }
+    }
+  }
 }
 
 tasks {
+  fun createVersionedRun(version: String, javaVersion: Int) {
+    register("runServer${version.replace(".", "")}", xyz.jpenilla.runpaper.task.RunServerTask::class) {
+      group = "run paper"
+      pluginJars.from(shadowJar.flatMap { it.archiveFile })
+      minecraftVersion(version)
+      jvmArgs("-Dnet.kyori.adventure.debug=true")
+      runDirectory(file("run/$version/"))
+      javaLauncher.set(project.javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(javaVersion))
+      })
+    }
+  }
+
+  mapOf(
+    setOf("1.8.8", "1.9.4", "1.10.2", "1.11.2", "1.12.2") to 8,
+    setOf("1.13.2", "1.14.4", "1.15.2") to 11,
+    setOf("1.16.5") to 16
+  ).forEach { (minecraftVersions, javaVersion) ->
+    for (version in minecraftVersions) {
+      createVersionedRun(version, javaVersion)
+    }
+  }
+
   runServer {
     minecraftVersion(mcVersion)
     jvmArgs("-Dnet.kyori.adventure.debug=true")
+    runDirectory(file("run/latest/"))
   }
 
   shadowJar {
