@@ -51,7 +51,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import static java.util.Objects.requireNonNull;
 
@@ -95,7 +95,7 @@ public class AdventureTestPlugin extends JavaPlugin implements Listener {
    * @param startIdx index in the array to join from
    * @return the string
    */
-  private static String join(final @NonNull String @NonNull [] elements, final @NonNull String separator, final int startIdx) {
+  private static String join(final @NotNull String @NotNull [] elements, final @NotNull String separator, final int startIdx) {
     final StringBuilder ret = new StringBuilder();
     for(int i = startIdx; i < elements.length; ++i) {
       if(i != startIdx) {
@@ -107,7 +107,7 @@ public class AdventureTestPlugin extends JavaPlugin implements Listener {
   }
 
   @Override
-  public boolean onCommand(final @NonNull CommandSender sender, final @NonNull Command command, final @NonNull String label, final @NonNull String @NonNull [] args) {
+  public boolean onCommand(final @NotNull CommandSender sender, final @NotNull Command command, final @NotNull String label, final @NotNull String @NotNull [] args) {
     final Audience result = this.adventure().sender(sender);
     if(args.length < 1) {
       result.sendMessage(Component.text("Subcommand required: countdown|bar|title|version|echo|sound", ERROR_COLOR));
@@ -157,6 +157,13 @@ public class AdventureTestPlugin extends JavaPlugin implements Listener {
         final Component text = this.serializer().deserialize(value);
         result.sendMessage(text);
         break;
+      case "opt":
+        final String raw = join(args, " ", 1);
+        final Component original = this.serializer().deserialize(raw);
+        result.sendMessage(Component.text("Original: ").append(original));
+        result.sendMessage(Component.text("Compacted: ").append(original.compact()));
+        break;
+
       case "baron":
         result.showBossBar(NOTIFICATION);
         break;
@@ -213,7 +220,7 @@ public class AdventureTestPlugin extends JavaPlugin implements Listener {
    * @param targets viewers of the action
    * @param completionAction callback to execute when countdown is complete
    */
-  private void beginCountdown(final @NonNull Component title, final int timeSeconds, final @NonNull Audience targets, final @NonNull Consumer<Audience> completionAction) {
+  private void beginCountdown(final @NotNull Component title, final int timeSeconds, final @NotNull Audience targets, final @NotNull Consumer<Audience> completionAction) {
     final BossBar bar = BossBar.bossBar(title, 1, BossBar.Color.RED, BossBar.Overlay.PROGRESS);
 
     final int timeMs = timeSeconds * 1000; // total time ms
