@@ -2,7 +2,7 @@ import net.kyori.indra.IndraExtension
 import net.kyori.indra.repository.sonatypeSnapshots
 
 plugins {
-  val indraVersion = "2.0.4"
+  val indraVersion = "2.0.6"
   id("net.kyori.indra") version indraVersion apply false
   id("com.github.johnrengelman.shadow") version "7.0.0" apply false
   id("com.github.ben-manes.versions") version "0.38.0"
