@@ -23,17 +23,22 @@
  */
 package net.kyori.adventure.test.bukkit;
 
+import com.google.common.collect.Maps;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
@@ -156,6 +161,35 @@ public class AdventureTestPlugin extends JavaPlugin implements Listener {
         final String value = join(args, " ", 1);
         final Component text = this.serializer().deserialize(value);
         result.sendMessage(text);
+        break;
+      case "nl":
+        result.sendMessage(Component.text("hello\nworld", NamedTextColor.RED));
+        break;
+      case "pointers":
+        Stream.of(
+            Identity.LOCALE,
+            Identity.DISPLAY_NAME,
+            Identity.NAME,
+            Identity.UUID,
+            PermissionChecker.POINTER
+          )
+          .map(pointer -> Maps.immutableEntry(pointer, result.get(pointer)))
+          .map(pointerValue -> {
+            final net.kyori.adventure.text.TextComponent.Builder output = Component.text().content("- ");
+            output.append(Component.text(pointerValue.getKey().key().toString(), NamedTextColor.LIGHT_PURPLE, TextDecoration.BOLD));
+            output.append(Component.text(": "));
+            if (pointerValue.getValue().isPresent()) {
+              final Object unwrapped = pointerValue.getValue().get();
+              if (unwrapped instanceof ComponentLike) {
+                output.append((ComponentLike) unwrapped);
+              } else {
+                output.append(Component.text(unwrapped.toString()));
+              }
+            } else {
+              output.append(Component.text("<absent>", NamedTextColor.GRAY));
+            }
+            return output.build();
+          }).forEach(result::sendMessage);
         break;
       case "opt":
         final String raw = join(args, " ", 1);

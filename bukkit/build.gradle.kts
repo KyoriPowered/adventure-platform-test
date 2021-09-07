@@ -1,12 +1,6 @@
 plugins {
   id("com.github.johnrengelman.shadow") // version defined in root project
-  id("xyz.jpenilla.run-paper") version "1.0.3"
-}
-
-repositories {
-  maven("https://papermc.io/repo/repository/maven-public/") {
-    name = "papermc"
-  }
+  id("xyz.jpenilla.run-paper")
 }
 
 val mcVersion = "1.17.1"
@@ -16,13 +10,13 @@ dependencies {
   shadow("io.papermc.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")
 }
 
-configurations {
-  sequenceOf(compileClasspath, runtimeClasspath).forEach {
-    it.configure {
-      attributes {
-        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 16)
-      }
-    }
+java {
+  disableAutoTargetJvm()
+}
+
+indra {
+  javaVersions {
+    minimumToolchain(16)
   }
 }
 
@@ -68,7 +62,7 @@ tasks {
       }
     // }
     dependencies {
-      exclude(dependency("org.checkerframework:.*"))
+      exclude(dependency("org.jetbrains:.*"))
     }
   }
 

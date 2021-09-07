@@ -1,5 +1,4 @@
 import net.kyori.indra.IndraExtension
-import net.kyori.indra.repository.sonatypeSnapshots
 
 plugins {
   val indraVersion = "2.0.6"
@@ -19,19 +18,13 @@ subprojects {
   apply(plugin = "net.kyori.indra.license-header")
   apply(plugin = "net.kyori.indra.checkstyle")
 
-  repositories {
-    // mavenLocal()
-    mavenCentral()
-    sonatypeSnapshots()
-  }
-
   extensions.getByType(IndraExtension::class).apply {
     github("KyoriPowered", "adventure-platform-test")
     mitLicense()
   }
 
   dependencies {
-    "implementation"("net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT")
+    "implementation"("net.kyori:adventure-text-minimessage:4.2.0-SNAPSHOT")
     "checkstyle"("ca.stellardrift:stylecheck:0.1")
   }
 
